@@ -1,0 +1,166 @@
+ EditText editText1, editText2;
+ editText1 = (EditText) findViewById(R.id.num1_ID);
+
+/////Button setonClickListener
+
+  String data1 = editText1.getText().toString();
+  String data2 = editText2.getText().toString();
+
+                if(data1.isEmpty() || data2.isEmpty()){
+                    Toast.makeText(MainActivity.this, "enter the numbers above", Toast.LENGTH_SHORT).show();
+                }
+                else {
+
+                    Float num1 = Float.valueOf(data1);
+                    Float num2 = Float.valueOf(data2);
+
+
+                    if (radioButton1.isChecked()) {
+                        Float sum = num1 + num2;
+                        String convertsum = String.valueOf(sum);
+                        textView1.setText(convertsum);
+
+                        Intent intent = new Intent(MainActivity.this,newA.class);
+                        intent.putExtra("answer",convertsum);
+                        startActivity(intent);
+else {
+                        Toast.makeText(MainActivity.this, "Choose a operation", Toast.LENGTH_SHORT).show();
+                    }
+
+//////seekbar.setOnclickListner
+
+seekper.setText(String.valueOf(seekBar.getProgress())+" %");
+seekper.setVisibility(View.VISIBLE);
+
+seekbarNumber = seekBar.getProgress();
+
+String userInput = salary.getText().toString();
+if (!userInput.equals("")){
+Float tax = Float.parseFloat(userInput) * seekbarNumber / 100;
+Float finalsalary = Float.parseFloat(userInput) - tax;
+output.setText(String.valueOf(finalsalary));
+output.setVisibility(View.VISIBLE);
+}
+
+/////////Seekbar Color text view code
+
+public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                Log.d("Test1","Progress");  // To see the log of the app progress and testing
+                textview.setText("Marks"+ seekBar.getProgress()+"/"+seekBar.getMax());
+                textview.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                Log.d("Test2","Start");
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.d("Test3", "Stop");
+                if(seekBar.getProgress() <= 30)
+                {
+                    textview.setTextColor(Color.RED);
+                    textview.setVisibility(View.VISIBLE);
+                }
+                else if(seekBar.getProgress()>= 70)
+                {
+                    textview.setTextColor(Color.GREEN);
+                    textview.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    textview.setTextColor(Color.BLACK);
+                    textview.setVisibility(View.VISIBLE);
+                }
+
+            }
+        });
+
+    }
+}
+
+/////////// SQiLitedatabase
+main activity
+///////
+
+ String scode = code.getText().toString();
+                String sname = name.getText().toString();
+                int scredit = Integer.parseInt(credit.getText().toString());
+
+                DBHelper dbHelper = new DBHelper(MainActivity.this);
+
+                dbHelper.addSubject(scode, sname, scredit);
+
+////////
+DBHelper.java file code
+//////////
+
+public class DBHelper extends SQLiteOpenHelper{
+    private  Context context;
+    private static final  String DB_Name = "data.db";
+    private static final int DBVersion = 1;
+
+    private static final String table_name = "subject";
+    private static final String Column_id = "id";
+    private static final String Column_code = "code";
+    private static final String Column_name = "name";
+    private static final String Column_credit= "credit";
+
+    public DBHelper(@Nullable Context context) {
+        super(context, DB_Name, null, DBVersion);
+        this.context = context;
+
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+
+        String query = "CREATE TABLE " + table_name + "(" +
+                Column_id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                Column_code + " TEXT, " +
+                Column_name + " TEXT, " +
+                Column_credit + " INTEGER)";
+        db.execSQL(query);
+
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+
+        db.execSQL("DROP TABLE IF EXISTS " + table_name );
+        onCreate(db);
+    }
+
+
+    public  void addSubject(String code,String name, int credit){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(Column_code, code);
+        cv.put(Column_name, name);
+        cv.put(Column_credit, credit);
+
+        long result = db.insert(table_name, null,cv);
+
+        if(result == -1){
+            Toast.makeText(context, "Faild", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    Cursor selectAll(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + table_name;
+
+        Cursor cursor = null;
+
+        if (db != null){
+            cursor = db.rawQuery(query,null);
+        }else{
+            Toast.makeText(context, "No", Toast.LENGTH_SHORT).show();
+        }
+        return  cursor;
+    }
+}
